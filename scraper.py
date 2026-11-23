@@ -194,11 +194,22 @@ def get_img_src(img_tag, base_url):
     return None
 
 
-def parse_article(fetcher, lang, url):
-    html = fetcher.fetch(url)
-    if not html:
-        return None
+def extract_ld_json_body(soup):
+    for script in soup.find_all("script", type="application/ld+json"):
+        try:
+            data = json.loads(script.string or "")
+            items = data if isinstance(data, list) else [data]
+            for obj in items:
+                if isinstance(obj, dict) and obj.get("articleBody"):
+                    body = obj["articleBody"].strip()
+                    if len(body) > 150:
+                        return body
+        except Exception:
+            continue
+    return ""
 
+
+def extract_article_data(html, lang, url):
     soup = BeautifulSoup(html, "lxml")
 
     h1 = soup.find("h1")
@@ -209,7 +220,6 @@ def parse_article(fetcher, lang, url):
         else (og_title["content"].strip() if og_title and og_title.get("content") else "")
     )
     if not title or len(title) < 15:
-        print(f"[PARSE SKIP] No title: {url}")
         return None
 
     og_img = soup.find("meta", property="og:image")
@@ -217,57 +227,76 @@ def parse_article(fetcher, lang, url):
 
     container = None
     selectors = (
-        (".article-content", ".desc", ".article-body", "article .content", "article", "main")
+        (".article-content", ".desc", ".article-body", ".news-details", "article .content", "article", "main")
         if lang == "ar"
-        else (".t-content__body", "article .t-content", "article", "main")
+        else (".t-content__body", "article .t-content__body", "article")
     )
     for sel in selectors:
         container = soup.select_one(sel)
-        if container and len(container.get_text(strip=True)) > 180:
+        if container and len(container.get_text(strip=True)) > 150:
             break
-
-    if not container:
-        print(f"[PARSE SKIP] No body container: {url}")
-        return None
-
-    for bad in container.select(
-        "script, style, iframe, nav, aside, .m-read-more, .related, .share, .ad, .ads, figcaption button"
-    ):
-        bad.decompose()
 
     inline_images = []
     blocks = []
 
-    for elem in container.find_all(["p", "h2", "h3", "blockquote", "figure", "img"]):
-        if elem.name in ("figure", "img"):
-            img = elem if elem.name == "img" else elem.find("img")
-            if not img:
+    if container:
+        # Aggressively strip related articles, promos, interstitials, ads, and sidebars
+        for bad in container.select(
+            "script, style, iframe, nav, aside, section, footer, "
+            ".m-read-more, .m-interstitial, .o-self-promo, .m-em-related, .t-content__related, "
+            ".m-block-ad, .o-newsletter, .related, .share, .ad, .ads, figcaption button, "
+            "[class*='related'], [class*='promo'], [class*='interstitial'], [class*='read-more']"
+        ):
+            bad.decompose()
+
+        for elem in container.find_all(["p", "h2", "h3", "blockquote", "figure", "img"]):
+            # Skip anything inside a link card (related articles are wrapped in <a>)
+            if elem.find_parent("a"):
                 continue
-            src = get_img_src(img, url)
-            if not src or src == featured_image or src in [i["url"] for i in inline_images]:
-                continue
-            if any(skip in src.lower() for skip in ("logo", "icon", "avatar", "sprite")):
-                continue
-            token = f"[[IMG_{len(inline_images) + 1}]]"
-            alt = img.get("alt", "").strip() or title
-            inline_images.append({"token": token, "url": src, "alt": alt})
-            blocks.append(token)
-        else:
-            if elem.find_parent(["blockquote", "figure"]):
-                continue
-            text = elem.get_text(" ", strip=True)
-            if len(text) < 20:
-                continue
-            if elem.name in ("h2", "h3"):
-                blocks.append(f"<h2>{text}</h2>")
-            elif elem.name == "blockquote":
-                blocks.append(f"<blockquote>{text}</blockquote>")
+
+            if elem.name in ("figure", "img"):
+                img = elem if elem.name == "img" else elem.find("img")
+                if not img:
+                    continue
+                src = get_img_src(img, url)
+                if not src or src == featured_image or src in [i["url"] for i in inline_images]:
+                    continue
+                if any(skip in src.lower() for skip in ("logo", "icon", "avatar", "sprite")):
+                    continue
+                token = f"[[IMG_{len(inline_images) + 1}]]"
+                alt = img.get("alt", "").strip() or title
+                inline_images.append({"token": token, "url": src, "alt": alt})
+                blocks.append(token)
             else:
-                blocks.append(f"<p>{text}</p>")
+                if elem.find_parent(["blockquote", "figure"]):
+                    continue
+                text = elem.get_text(" ", strip=True)
+                if len(text) < 25:
+                    continue
+                # Skip France 24 / Mosaïque FM inline promo lines
+                low_t = text.lower()
+                if any(
+                    phrase in low_t
+                    for phrase in ("à lire aussi", "a lire aussi", "read more", "also read", "اقرأ أيضا")
+                ):
+                    continue
+                if elem.name in ("h2", "h3"):
+                    blocks.append(f"<h2>{text}</h2>")
+                elif elem.name == "blockquote":
+                    blocks.append(f"<blockquote>{text}</blockquote>")
+                else:
+                    blocks.append(f"<p>{text}</p>")
 
     body_html = "\n".join(blocks)
-    if len(re.sub(r"<[^>]+>", "", body_html)) < 180:
-        print(f"[PARSE SKIP] Body too short: {url}")
+
+    # Fallback to JSON-LD articleBody (especially helpful for Mosaïque FM)
+    if len(re.sub(r"<[^>]+>", "", body_html)) < 150:
+        ld_body = extract_ld_json_body(soup)
+        if ld_body:
+            paras = [f"<p>{p.strip()}</p>" for p in re.split(r"\n+", ld_body) if len(p.strip()) > 20]
+            body_html = "\n".join(paras) if paras else f"<p>{ld_body}</p>"
+
+    if len(re.sub(r"<[^>]+>", "", body_html)) < 150:
         return None
 
     return {
@@ -277,6 +306,25 @@ def parse_article(fetcher, lang, url):
         "inline_images": inline_images,
         "url": url,
     }
+
+
+def parse_article(fetcher, lang, url):
+    # Mosaïque FM renders article bodies with JS, so try Tier 1 then auto-upgrade to Playwright
+    html = fetcher.fetch(url)
+    if html:
+        parsed = extract_article_data(html, lang, url)
+        if parsed:
+            return parsed
+
+    if lang == "ar":
+        browser_html = fetcher.fetch_browser(url)
+        if browser_html:
+            parsed = extract_article_data(browser_html, lang, url)
+            if parsed:
+                return parsed
+
+    print(f"[PARSE SKIP] Body too short: {url}")
+    return None
 
 
 def build_ai_prompt(article, lang, hint_category):
@@ -307,7 +355,7 @@ ORIGINAL HEADLINE:
 {article["title"]}
 
 ORIGINAL ARTICLE:
-{article["body_html"][:9000]}
+{article["body_html"][:8500]}
 """
 
 
@@ -343,7 +391,7 @@ def call_gemini(prompt):
             if r.status_code == 200:
                 text = r.json()["candidates"][0]["content"]["parts"][0]["text"]
                 return parse_json_response(text)
-            print(f"[GEMINI {model} {r.status_code}] {r.text[:160]}")
+            print(f"[GEMINI {model} {r.status_code}] {r.text[:140]}")
         except Exception as e:
             print(f"[GEMINI {model} ERR] {e}")
     return None
@@ -371,7 +419,7 @@ def call_groq(prompt):
             if r.status_code == 200:
                 text = r.json()["choices"][0]["message"]["content"]
                 return parse_json_response(text)
-            print(f"[GROQ {model} {r.status_code}] {r.text[:160]}")
+            print(f"[GROQ {model} {r.status_code}] {r.text[:140]}")
         except Exception as e:
             print(f"[GROQ {model} ERR] {e}")
     return None
@@ -431,7 +479,7 @@ def main():
                     if not ai_data:
                         ai_data = call_groq(prompt)
 
-                    time.sleep(5)
+                    time.sleep(8)
 
                     if not ai_data or not ai_data.get("title") or not ai_data.get("content_html"):
                         continue
