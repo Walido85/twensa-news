@@ -6,8 +6,9 @@ import time
 from datetime import datetime, timezone
 from urllib.parse import urljoin
 
-import requests
 from bs4 import BeautifulSoup
+from curl_cffi import requests as cffi_requests
+from playwright.sync_api import sync_playwright
 
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "").strip()
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "").strip()
@@ -15,8 +16,8 @@ WP_WEBHOOK_URL = os.environ.get("WP_WEBHOOK_URL", "").strip()
 
 SEEN_FILE = "seen.json"
 OUTPUT_FILE = "news.json"
-MAX_NEW_PER_LANG = 3      # Keeps each run fast and well within free AI quotas
-MAX_FEED_ITEMS = 45       # Rolling window in news.json
+MAX_NEW_PER_LANG = 3
+MAX_FEED_ITEMS = 45
 
 VALID_CATEGORIES = [
     "tunisia",
@@ -26,14 +27,6 @@ VALID_CATEGORIES = [
     "culture-tech",
     "society-health",
 ]
-
-HEADERS = {
-    "User-Agent": (
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
-    ),
-    "Accept-Language": "fr-FR,fr;q=0.9,ar;q=0.8,en;q=0.7",
-}
 
 SOURCES = {
     "ar": {
@@ -66,6 +59,79 @@ SOURCES = {
 }
 
 
+class StealthFetcher:
+    """Tier 1: curl_cffi Chrome TLS impersonation. Tier 2: Headless Chromium via Playwright."""
+
+    def __init__(self):
+        self._pw = None
+        self._browser = None
+        self._context = None
+
+    def _ensure_browser(self):
+        if self._browser is None:
+            self._pw = sync_playwright().start()
+            self._browser = self._pw.chromium.launch(
+                headless=True,
+                args=[
+                    "--disable-blink-features=AutomationControlled",
+                    "--no-sandbox",
+                    "--disable-dev-shm-usage",
+                ],
+            )
+            self._context = self._browser.new_context(
+                user_agent=(
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                    "AppleWebKit/537.36 (KHTML, like Gecko) "
+                    "Chrome/131.0.0.0 Safari/537.36"
+                ),
+                viewport={"width": 1366, "height": 768},
+                locale="fr-FR",
+            )
+            self._context.add_init_script(
+                "Object.defineProperty(navigator, 'webdriver', {get: () => undefined});"
+            )
+
+    def fetch(self, url):
+        # Tier 1: Fast TLS-impersonated HTTP request
+        try:
+            r = cffi_requests.get(url, impersonate="chrome", timeout=20)
+            if r.status_code == 200 and len(r.text) > 5000 and "Just a moment..." not in r.text:
+                print(f"[TIER1 OK] {url}")
+                return r.text
+            print(f"[TIER1 {r.status_code}] Switching to Playwright -> {url}")
+        except Exception as e:
+            print(f"[TIER1 ERR] {e} -> Switching to Playwright")
+
+        # Tier 2: Real Chromium browser fallback
+        try:
+            self._ensure_browser()
+            page = self._context.new_page()
+            # Block heavy media/fonts to keep GitHub Actions fast
+            page.route(
+                "**/*",
+                lambda route: route.abort()
+                if route.request.resource_type in ("media", "font", "stylesheet")
+                else route.continue_(),
+            )
+            page.goto(url, wait_until="domcontentloaded", timeout=35000)
+            page.wait_for_timeout(3000)
+            html = page.content()
+            page.close()
+            if len(html) > 3000:
+                print(f"[TIER2 OK] {url}")
+                return html
+        except Exception as e:
+            print(f"[TIER2 ERR] {url}: {e}")
+
+        return None
+
+    def close(self):
+        if self._browser:
+            self._browser.close()
+        if self._pw:
+            self._pw.stop()
+
+
 def load_json(path, default):
     if os.path.exists(path):
         try:
@@ -85,17 +151,6 @@ def url_hash(url):
     return hashlib.sha256(url.strip().encode("utf-8")).hexdigest()[:16]
 
 
-def fetch_html(url):
-    try:
-        r = requests.get(url, headers=HEADERS, timeout=20)
-        if r.status_code == 200:
-            r.encoding = r.apparent_encoding or "utf-8"
-            return r.text
-    except Exception as e:
-        print(f"[FETCH ERROR] {url}: {e}")
-    return None
-
-
 def extract_listing_links(lang, listing_url, html):
     soup = BeautifulSoup(html, "lxml")
     links = []
@@ -107,12 +162,10 @@ def extract_listing_links(lang, listing_url, html):
             continue
 
         if lang == "ar":
-            # Mosaïque FM article URLs contain /ar/ followed by a numeric ID or slug
-            if "mosaiquefm.net/ar/" in href and re.search(r"/\d{5,}/", href):
+            if "mosaiquefm.net/ar/" in href and re.search(r"/\d{5,}", href):
                 seen_local.add(href)
                 links.append(href)
         else:
-            # France 24 article URLs contain /fr/YYYYMMDD- or /en/YYYYMMDD-
             if f"france24.com/{lang}/" in href and re.search(r"/20\d{6}-", href):
                 seen_local.add(href)
                 links.append(href)
@@ -120,6 +173,7 @@ def extract_listing_links(lang, listing_url, html):
         if len(links) >= 12:
             break
 
+    print(f"[LINKS] {lang} -> {len(links)} found on {listing_url}")
     return links
 
 
@@ -131,14 +185,13 @@ def get_img_src(img_tag, base_url):
     return None
 
 
-def parse_article(lang, url):
-    html = fetch_html(url)
+def parse_article(fetcher, lang, url):
+    html = fetcher.fetch(url)
     if not html:
         return None
 
     soup = BeautifulSoup(html, "lxml")
 
-    # Title
     h1 = soup.find("h1")
     og_title = soup.find("meta", property="og:title")
     title = (
@@ -147,35 +200,27 @@ def parse_article(lang, url):
         else (og_title["content"].strip() if og_title and og_title.get("content") else "")
     )
     if not title or len(title) < 15:
+        print(f"[PARSE SKIP] No title: {url}")
         return None
 
-    # Featured image
     og_img = soup.find("meta", property="og:image")
     featured_image = og_img["content"].strip() if og_img and og_img.get("content") else ""
 
-    # Locate main article container
     container = None
-    if lang == "ar":
-        for sel in (
-            ".article-content",
-            ".desc",
-            ".article-body",
-            "article .content",
-            "article",
-        ):
-            container = soup.select_one(sel)
-            if container and len(container.get_text(strip=True)) > 180:
-                break
-    else:
-        for sel in (".t-content__body", "article .t-content", "article"):
-            container = soup.select_one(sel)
-            if container and len(container.get_text(strip=True)) > 180:
-                break
+    selectors = (
+        (".article-content", ".desc", ".article-body", "article .content", "article", "main")
+        if lang == "ar"
+        else (".t-content__body", "article .t-content", "article", "main")
+    )
+    for sel in selectors:
+        container = soup.select_one(sel)
+        if container and len(container.get_text(strip=True)) > 180:
+            break
 
     if not container:
+        print(f"[PARSE SKIP] No body container: {url}")
         return None
 
-    # Strip ads, scripts, share widgets, and related boxes
     for bad in container.select(
         "script, style, iframe, nav, aside, .m-read-more, .related, .share, .ad, .ads, figcaption button"
     ):
@@ -185,7 +230,7 @@ def parse_article(lang, url):
     blocks = []
 
     for elem in container.find_all(["p", "h2", "h3", "blockquote", "figure", "img"]):
-        if elem.name == "figure" or elem.name == "img":
+        if elem.name in ("figure", "img"):
             img = elem if elem.name == "img" else elem.find("img")
             if not img:
                 continue
@@ -199,7 +244,6 @@ def parse_article(lang, url):
             inline_images.append({"token": token, "url": src, "alt": alt})
             blocks.append(token)
         else:
-            # Avoid duplicating text inside nested elements
             if elem.find_parent(["blockquote", "figure"]):
                 continue
             text = elem.get_text(" ", strip=True)
@@ -213,7 +257,8 @@ def parse_article(lang, url):
                 blocks.append(f"<p>{text}</p>")
 
     body_html = "\n".join(blocks)
-    if len(re.sub(r"<[^>]+>", "", body_html)) < 220:
+    if len(re.sub(r"<[^>]+>", "", body_html)) < 180:
+        print(f"[PARSE SKIP] Body too short: {url}")
         return None
 
     return {
@@ -271,7 +316,6 @@ def parse_json_response(raw_text):
 def call_gemini(prompt):
     if not GEMINI_API_KEY:
         return None
-    url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent"
     headers = {
         "Content-Type": "application/json",
         "x-goog-api-key": GEMINI_API_KEY,
@@ -283,15 +327,16 @@ def call_gemini(prompt):
             "responseMimeType": "application/json",
         },
     }
-    try:
-        r = requests.post(url, headers=headers, json=payload, timeout=45)
-        if r.status_code == 200:
-            data = r.json()
-            text = data["candidates"][0]["content"]["parts"][0]["text"]
-            return parse_json_response(text)
-        print(f"[GEMINI {r.status_code}] {r.text[:200]}")
-    except Exception as e:
-        print(f"[GEMINI ERROR] {e}")
+    for model in ("gemini-2.5-flash", "gemini-2.0-flash"):
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
+        try:
+            r = cffi_requests.post(url, headers=headers, json=payload, timeout=45)
+            if r.status_code == 200:
+                text = r.json()["candidates"][0]["content"]["parts"][0]["text"]
+                return parse_json_response(text)
+            print(f"[GEMINI {model} {r.status_code}] {r.text[:160]}")
+        except Exception as e:
+            print(f"[GEMINI {model} ERR] {e}")
     return None
 
 
@@ -303,7 +348,7 @@ def call_groq(prompt):
         "Content-Type": "application/json",
         "Authorization": f"Bearer {GROQ_API_KEY}",
     }
-    for model in ("openai/gpt-oss-120b", "openai/gpt-oss-20b"):
+    for model in ("llama-3.3-70b-versatile", "openai/gpt-oss-120b", "openai/gpt-oss-20b"):
         payload = {
             "model": model,
             "temperature": 0.4,
@@ -314,13 +359,13 @@ def call_groq(prompt):
             ],
         }
         try:
-            r = requests.post(url, headers=headers, json=payload, timeout=45)
+            r = cffi_requests.post(url, headers=headers, json=payload, timeout=45)
             if r.status_code == 200:
                 text = r.json()["choices"][0]["message"]["content"]
                 return parse_json_response(text)
-            print(f"[GROQ {model} {r.status_code}] {r.text[:200]}")
+            print(f"[GROQ {model} {r.status_code}] {r.text[:160]}")
         except Exception as e:
-            print(f"[GROQ {model} ERROR] {e}")
+            print(f"[GROQ {model} ERR] {e}")
     return None
 
 
@@ -339,71 +384,74 @@ def restore_inline_images(html_content, inline_images):
 
 
 def main():
+    fetcher = StealthFetcher()
     seen = load_json(SEEN_FILE, [])
     seen_set = set(seen)
     feed = load_json(OUTPUT_FILE, {"updated_at": "", "items": []})
     existing_items = feed.get("items", [])
     new_items = []
 
-    for lang, cfg in SOURCES.items():
-        collected = 0
-        for listing_url, hint_cat in cfg["listings"]:
-            if collected >= MAX_NEW_PER_LANG:
-                break
-            html = fetch_html(listing_url)
-            if not html:
-                continue
-            links = extract_listing_links(lang, listing_url, html)
-
-            for link in links:
+    try:
+        for lang, cfg in SOURCES.items():
+            collected = 0
+            for listing_url, hint_cat in cfg["listings"]:
                 if collected >= MAX_NEW_PER_LANG:
                     break
-                h = url_hash(link)
-                if h in seen_set:
+                html = fetcher.fetch(listing_url)
+                if not html:
                     continue
+                links = extract_listing_links(lang, listing_url, html)
 
-                article = parse_article(lang, link)
-                if not article:
-                    continue
+                for link in links:
+                    if collected >= MAX_NEW_PER_LANG:
+                        break
+                    h = url_hash(link)
+                    if h in seen_set:
+                        continue
 
-                prompt = build_ai_prompt(article, lang, hint_cat)
-                ai_data = call_gemini(prompt)
-                if not ai_data:
-                    ai_data = call_groq(prompt)
+                    article = parse_article(fetcher, lang, link)
+                    if not article:
+                        continue
 
-                # Pause to respect free-tier RPM limits
-                time.sleep(6)
+                    prompt = build_ai_prompt(article, lang, hint_cat)
+                    ai_data = call_gemini(prompt)
+                    if not ai_data:
+                        ai_data = call_groq(prompt)
 
-                if not ai_data or not ai_data.get("title") or not ai_data.get("content_html"):
-                    continue
+                    time.sleep(5)
 
-                category = ai_data.get("category", hint_cat)
-                if category not in VALID_CATEGORIES:
-                    category = hint_cat
+                    if not ai_data or not ai_data.get("title") or not ai_data.get("content_html"):
+                        continue
 
-                final_html = restore_inline_images(
-                    ai_data["content_html"], article["inline_images"]
-                )
+                    category = ai_data.get("category", hint_cat)
+                    if category not in VALID_CATEGORIES:
+                        category = hint_cat
 
-                new_items.append({
-                    "hash": h,
-                    "lang": lang,
-                    "category": category,
-                    "title": ai_data["title"].strip(),
-                    "content_html": final_html,
-                    "featured_image": article["featured_image"],
-                    "inline_images": [i["url"] for i in article["inline_images"]],
-                    "seo_title": ai_data.get("seo_title", ai_data["title"]).strip(),
-                    "seo_description": ai_data.get("seo_description", "").strip(),
-                    "source_name": cfg["name"],
-                    "source_url": link,
-                    "scraped_at": datetime.now(timezone.utc).isoformat(),
-                })
+                    final_html = restore_inline_images(
+                        ai_data["content_html"], article["inline_images"]
+                    )
 
-                seen.append(h)
-                seen_set.add(h)
-                collected += 1
-                print(f"[OK] ({lang}/{category}) {ai_data['title'][:65]}")
+                    new_items.append({
+                        "hash": h,
+                        "lang": lang,
+                        "category": category,
+                        "title": ai_data["title"].strip(),
+                        "content_html": final_html,
+                        "featured_image": article["featured_image"],
+                        "inline_images": [i["url"] for i in article["inline_images"]],
+                        "seo_title": ai_data.get("seo_title", ai_data["title"]).strip(),
+                        "seo_description": ai_data.get("seo_description", "").strip(),
+                        "source_name": cfg["name"],
+                        "source_url": link,
+                        "scraped_at": datetime.now(timezone.utc).isoformat(),
+                    })
+
+                    seen.append(h)
+                    seen_set.add(h)
+                    collected += 1
+                    print(f"[OK] ({lang}/{category}) {ai_data['title'][:65]}")
+    finally:
+        fetcher.close()
 
     if new_items:
         merged = new_items + existing_items
@@ -417,10 +465,10 @@ def main():
 
         if WP_WEBHOOK_URL:
             try:
-                r = requests.get(WP_WEBHOOK_URL, timeout=30)
+                r = cffi_requests.get(WP_WEBHOOK_URL, timeout=30)
                 print(f"[WEBHOOK] Status {r.status_code}: {r.text[:120]}")
             except Exception as e:
-                print(f"[WEBHOOK ERROR] {e}")
+                print(f"[WEBHOOK ERR] {e}")
     else:
         print("No new articles found.")
 
