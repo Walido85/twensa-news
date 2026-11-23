@@ -12,12 +12,12 @@ from playwright.sync_api import sync_playwright
 
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "").strip()
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "").strip()
-WP_WEBHOOK_URL = os.environ.get("WP_WEBHOOK_URL", "").strip()
 
 SEEN_FILE = "seen.json"
 OUTPUT_FILE = "news.json"
 MAX_NEW_PER_LANG = 3
-MAX_FEED_ITEMS = 45
+MAX_PER_CATEGORY_PER_RUN = 1
+MAX_FEED_ITEMS = 60
 
 VALID_CATEGORIES = [
     "tunisia",
@@ -34,6 +34,8 @@ SOURCES = {
         "listings": [
             ("https://www.mosaiquefm.net/ar/actualites", "tunisia"),
             ("https://www.mosaiquefm.net/ar/actualites/%D8%A7%D9%84%D8%A3%D8%AE%D8%A8%D8%A7%D8%B1-%D8%A7%D9%84%D8%B9%D8%A7%D9%84%D9%85%D9%8A%D8%A9/3", "world"),
+            ("https://www.mosaiquefm.net/ar/actualites/%D8%A3%D8%AE%D8%A8%D8%A7%D8%B1-%D8%A7%D9%84%D8%B1%D9%8A%D8%A7%D8%B6%D8%A9/5", "sports"),
+            ("https://www.mosaiquefm.net/ar/actualites/%D8%A3%D8%AE%D8%A8%D8%A7%D8%B1-%D8%A7%D9%84%D8%A7%D9%82%D8%AA%D8%B5%D8%A7%D8%AF/4", "economy"),
         ],
     },
     "fr": {
@@ -41,8 +43,10 @@ SOURCES = {
         "listings": [
             ("https://www.france24.com/fr/afrique/", "tunisia"),
             ("https://www.france24.com/fr/", "world"),
+            ("https://www.france24.com/fr/economie/", "economy"),
             ("https://www.france24.com/fr/sports/", "sports"),
             ("https://www.france24.com/fr/culture/", "culture-tech"),
+            ("https://www.france24.com/fr/planete/", "society-health"),
         ],
     },
     "en": {
@@ -240,7 +244,6 @@ def extract_article_data(html, lang, url):
     blocks = []
 
     if container:
-        # Aggressively strip related articles, promos, interstitials, ads, and sidebars
         for bad in container.select(
             "script, style, iframe, nav, aside, section, footer, "
             ".m-read-more, .m-interstitial, .o-self-promo, .m-em-related, .t-content__related, "
@@ -250,7 +253,6 @@ def extract_article_data(html, lang, url):
             bad.decompose()
 
         for elem in container.find_all(["p", "h2", "h3", "blockquote", "figure", "img"]):
-            # Skip anything inside a link card (related articles are wrapped in <a>)
             if elem.find_parent("a"):
                 continue
 
@@ -273,7 +275,6 @@ def extract_article_data(html, lang, url):
                 text = elem.get_text(" ", strip=True)
                 if len(text) < 25:
                     continue
-                # Skip France 24 / Mosaïque FM inline promo lines
                 low_t = text.lower()
                 if any(
                     phrase in low_t
@@ -289,7 +290,6 @@ def extract_article_data(html, lang, url):
 
     body_html = "\n".join(blocks)
 
-    # Fallback to JSON-LD articleBody (especially helpful for Mosaïque FM)
     if len(re.sub(r"<[^>]+>", "", body_html)) < 150:
         ld_body = extract_ld_json_body(soup)
         if ld_body:
@@ -309,7 +309,6 @@ def extract_article_data(html, lang, url):
 
 
 def parse_article(fetcher, lang, url):
-    # Mosaïque FM renders article bodies with JS, so try Tier 1 then auto-upgrade to Playwright
     html = fetcher.fetch(url)
     if html:
         parsed = extract_article_data(html, lang, url)
@@ -341,7 +340,7 @@ Rules:
 6. Confirm the best category key from ONLY this list: {VALID_CATEGORIES} (hint: {hint_category}).
 7. Generate a clean SEO title (max 60 chars) and SEO meta description (max 155 chars) in {lang_names[lang]}.
 
-Return ONLY a valid JSON object with these exact keys:
+Return ONLY a valid JSON object with these exact keys (escape any double quotes inside HTML properly):
 {{
   "lang": "{lang}",
   "category": "one_of_the_6_keys",
@@ -355,19 +354,22 @@ ORIGINAL HEADLINE:
 {article["title"]}
 
 ORIGINAL ARTICLE:
-{article["body_html"][:8500]}
+{article["body_html"][:5500]}
 """
 
 
 def parse_json_response(raw_text):
+    if not raw_text:
+        raise ValueError("Empty response")
     text = raw_text.strip()
+    text = re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL).strip()
     text = re.sub(r"^```(?:json)?\s*", "", text)
     text = re.sub(r"\s*```$", "", text)
     start = text.find("{")
     end = text.rfind("}")
     if start != -1 and end != -1:
         text = text[start : end + 1]
-    return json.loads(text)
+    return json.loads(text, strict=False)
 
 
 def call_gemini(prompt):
@@ -381,17 +383,29 @@ def call_gemini(prompt):
         "contents": [{"parts": [{"text": prompt}]}],
         "generationConfig": {
             "temperature": 0.4,
+            "maxOutputTokens": 8192,
             "responseMimeType": "application/json",
         },
     }
-    for model in ("gemini-3.8-flash", "gemini-3.5-flash-lite"):
+    gemini_models = (
+        "gemini-3.5-flash-lite",
+        "gemini-3.1-flash-lite",
+        "gemini-3.6-flash",
+        "gemini-4-hydrogen",
+        "gemini-3.8-flash",
+    )
+    for model in gemini_models:
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
         try:
-            r = cffi_requests.post(url, headers=headers, json=payload, timeout=45)
+            r = cffi_requests.post(url, headers=headers, json=payload, timeout=50)
             if r.status_code == 200:
                 text = r.json()["candidates"][0]["content"]["parts"][0]["text"]
-                return parse_json_response(text)
+                res = parse_json_response(text)
+                print(f"[AI OK] Gemini ({model})")
+                return res
             print(f"[GEMINI {model} {r.status_code}] {r.text[:140]}")
+            if r.status_code == 503:
+                time.sleep(2)
         except Exception as e:
             print(f"[GEMINI {model} ERR] {e}")
     return None
@@ -405,21 +419,46 @@ def call_groq(prompt):
         "Content-Type": "application/json",
         "Authorization": f"Bearer {GROQ_API_KEY}",
     }
-    for model in ("openai/gpt-oss-120b", "openai/gpt-oss-20b"):
+    groq_configs = [
+        {
+            "model": "qwen/qwen3.8-27b",
+            "reasoning_effort": "none",
+            "max_completion_tokens": 4096,
+        },
+        {
+            "model": "openai/gpt-oss-120b",
+            "reasoning_effort": "low",
+            "include_reasoning": False,
+            "max_completion_tokens": 4096,
+        },
+        {
+            "model": "openai/gpt-oss-20b",
+            "reasoning_effort": "low",
+            "include_reasoning": False,
+            "max_completion_tokens": 4096,
+        },
+    ]
+    for cfg in groq_configs:
+        model = cfg["model"]
         payload = {
-            "model": model,
+            **cfg,
             "temperature": 0.4,
+            "response_format": {"type": "json_object"},
             "messages": [
-                {"role": "system", "content": "Return ONLY a valid raw JSON object. No markdown, no extra text."},
+                {"role": "system", "content": "Return ONLY a valid JSON object. No markdown, no extra text."},
                 {"role": "user", "content": prompt},
             ],
         }
         try:
-            r = cffi_requests.post(url, headers=headers, json=payload, timeout=45)
+            r = cffi_requests.post(url, headers=headers, json=payload, timeout=50)
             if r.status_code == 200:
-                text = r.json()["choices"][0]["message"]["content"]
-                return parse_json_response(text)
+                text = r.json()["choices"][0]["message"].get("content", "")
+                res = parse_json_response(text)
+                print(f"[AI OK] Groq ({model})")
+                return res
             print(f"[GROQ {model} {r.status_code}] {r.text[:140]}")
+            if r.status_code == 429:
+                time.sleep(3)
         except Exception as e:
             print(f"[GROQ {model} ERR] {e}")
     return None
@@ -463,8 +502,9 @@ def main():
                     if browser_html:
                         links = extract_listing_links(lang, listing_url, browser_html)
 
+                cat_added = 0
                 for link in links:
-                    if collected >= MAX_NEW_PER_LANG:
+                    if collected >= MAX_NEW_PER_LANG or cat_added >= MAX_PER_CATEGORY_PER_RUN:
                         break
                     h = url_hash(link)
                     if h in seen_set:
@@ -479,7 +519,7 @@ def main():
                     if not ai_data:
                         ai_data = call_groq(prompt)
 
-                    time.sleep(8)
+                    time.sleep(10)
 
                     if not ai_data or not ai_data.get("title") or not ai_data.get("content_html"):
                         continue
@@ -510,6 +550,7 @@ def main():
                     seen.append(h)
                     seen_set.add(h)
                     collected += 1
+                    cat_added += 1
                     print(f"[OK] ({lang}/{category}) {ai_data['title'][:65]}")
     finally:
         fetcher.close()
@@ -523,13 +564,6 @@ def main():
         save_json(OUTPUT_FILE, feed)
         save_json(SEEN_FILE, seen[-1000:])
         print(f"Saved {len(new_items)} new articles to {OUTPUT_FILE}.")
-
-        if WP_WEBHOOK_URL:
-            try:
-                r = cffi_requests.get(WP_WEBHOOK_URL, timeout=30)
-                print(f"[WEBHOOK] Status {r.status_code}: {r.text[:120]}")
-            except Exception as e:
-                print(f"[WEBHOOK ERR] {e}")
     else:
         print("No new articles found.")
 
