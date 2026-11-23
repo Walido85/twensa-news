@@ -243,6 +243,23 @@ def extract_article_data(html, lang, url):
     inline_images = []
     blocks = []
 
+    skip_phrases = (
+        "à lire aussi",
+        "a lire aussi",
+        "sur le même sujet",
+        "read more",
+        "also read",
+        "read also",
+        "related stories",
+        "avec afp",
+        "avec reuters",
+        "with afp",
+        "with reuters",
+        "france 24",
+        "اقرأ أيضا",
+        "موزاييك",
+    )
+
     if container:
         for bad in container.select(
             "script, style, iframe, nav, aside, section, footer, "
@@ -276,10 +293,7 @@ def extract_article_data(html, lang, url):
                 if len(text) < 25:
                     continue
                 low_t = text.lower()
-                if any(
-                    phrase in low_t
-                    for phrase in ("à lire aussi", "a lire aussi", "read more", "also read", "اقرأ أيضا")
-                ):
+                if any(phrase in low_t for phrase in skip_phrases):
                     continue
                 if elem.name in ("h2", "h3"):
                     blocks.append(f"<h2>{text}</h2>")
@@ -334,11 +348,12 @@ Task: Lightly polish the article below in {lang_names[lang]} so it is NOT copy-p
 Rules:
 1. Keep the exact language: {lang_names[lang]} ({lang}).
 2. Rephrase the headline cleanly with the same meaning.
-3. Lightly vary phrasing and transitions in every paragraph without dropping facts. Remove source self-references (like "أفاد مراسل موزاييك" or "France 24").
-4. PRESERVE every image placeholder token like [[IMG_1]], [[IMG_2]] in its exact place. Never rename or remove them.
-5. Output valid HTML using only <p>, <h2>, <blockquote> tags and the [[IMG_X]] tokens.
-6. Confirm the best category key from ONLY this list: {VALID_CATEGORIES} (hint: {hint_category}).
-7. Generate a clean SEO title (max 60 chars) and SEO meta description (max 155 chars) in {lang_names[lang]}.
+3. Lightly vary phrasing and transitions in every paragraph without dropping facts.
+4. NEVER mention the original website or agency name (no Mosaïque FM, موزاييك, France 24, AFP, Reuters, etc.) anywhere in the title, body, or SEO fields. Remove any unrelated teaser/promo sentences.
+5. PRESERVE every image placeholder token like [[IMG_1]], [[IMG_2]] in its exact place. Never rename or remove them.
+6. Output valid HTML using only <p>, <h2>, <blockquote> tags and the [[IMG_X]] tokens.
+7. Confirm the best category key from ONLY this list: {VALID_CATEGORIES} (hint: {hint_category}).
+8. Generate a clean SEO title (max 60 chars) and SEO meta description (max 155 chars) in {lang_names[lang]}.
 
 Return ONLY a valid JSON object with these exact keys (escape any double quotes inside HTML properly):
 {{
@@ -388,11 +403,11 @@ def call_gemini(prompt):
         },
     }
     gemini_models = (
-        "gemini-3.5-flash-lite",
-        "gemini-3.1-flash-lite",
         "gemini-3.6-flash",
         "gemini-4-hydrogen",
         "gemini-3.8-flash",
+        "gemini-3.5-flash-lite",
+        "gemini-3.1-flash-lite",
     )
     for model in gemini_models:
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
@@ -519,7 +534,7 @@ def main():
                     if not ai_data:
                         ai_data = call_groq(prompt)
 
-                    time.sleep(10)
+                    time.sleep(6)
 
                     if not ai_data or not ai_data.get("title") or not ai_data.get("content_html"):
                         continue
@@ -542,8 +557,6 @@ def main():
                         "inline_images": [i["url"] for i in article["inline_images"]],
                         "seo_title": ai_data.get("seo_title", ai_data["title"]).strip(),
                         "seo_description": ai_data.get("seo_description", "").strip(),
-                        "source_name": cfg["name"],
-                        "source_url": link,
                         "scraped_at": datetime.now(timezone.utc).isoformat(),
                     })
 
