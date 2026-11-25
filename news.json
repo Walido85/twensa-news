@@ -1,6 +1,56 @@
 {
-  "updated_at": "2026-11-25T08:04:44.331741+00:00",
+  "updated_at": "2026-11-25T09:02:26.805870+00:00",
   "items": [
+    {
+      "hash": "6cee06abdff262ee",
+      "lang": "ar",
+      "category": "tunisia",
+      "title": "نابل: ضبط 15 طناً من الرمان داخل مستودع غير قانوني",
+      "content_html": "<p>أفادت الإدارة الجهوية للتجارة بولاية نابل أن أعوان فرق المراقبة الاقتصادية نجحوا، خلال تنفيذ حملات ميدانية بالسوق البلدي في منطقة قربة ومحيطه، في تسجيل 11 مخالفة اقتصادية. وشملت هذه التجاوزات الزيادة المفرطة في أسعار الخضر والغلال، والإشهار الضليل بخصوص اللحوم الحمراء، إضافة إلى استخدام أدوات وزن غير مطابقة للمواصفات القانونية بهدف التلاعب والغش التجاري.</p><p>وفي السياق ذاته، استطاعت الوحدات الرقابية الموزعة بين الحمامات ومنزل تميم وبني خلاد تحرير 21 محضر بحث اقتصادي، جراء ارتكاب تجاوزات تمس من شفافية المعاملات التجارية، إلى جانب مخالفة قوانين الدعم والقيام بممارسات احتكارية.</p><p>وبحسب المعطيات الصادرة عن الإدارة الجهوية للتجارة، تمكن فريق عمل مشترك ضم ممثلين عن سلطة التجارة والحرس الوطني من رصد كميات من غلال الرمان بلغت نحو 15 طناً كانت مخزنة داخل مستودع غير مصرح به رسمياً، وذلك على خلفية عدم إثبات صفة الحائز واستغلال فضاء عشوائي للتخزين والتصرف في المحاصيل بشكل يخالف الأطر القانونية.</p><p>وقد باشرت فرق المراقبة الاقتصادية استكمال إجراءات الحجز الفعلي لتلك الكميات، مع توجيه استدعاءات للأطراف المتورطة لاستكمال التحقيقات وتحرير المحاضر المستوجبة في شأنهم.</p>",
+      "featured_image": "https://content.mosaiquefm.net/uploads/content/large/1795594540.webp",
+      "inline_images": [],
+      "seo_title": "نابل: حجز 15 طناً من الرمان في مستودع عشوائي",
+      "seo_description": "فرق المراقبة الاقتصادية بنابل تسجل مخالفات عديدة وتضبط 15 طناً من الرمان داخل مستودع غير قانوني في إطار حملة لمكافحة الاحتكار.",
+      "scraped_at": "2026-11-25T09:01:18.934397+00:00"
+    },
+    {
+      "hash": "3ee38db325cb9f05",
+      "lang": "ar",
+      "category": "sports",
+      "title": "أندية قابس تقرر تجميد أنشطتها والانسحاب من الرابطة المحترفة الثانية",
+      "content_html": "<p>أصدرت الهيئات المديرة لثلاثة أندية في ولاية قابس، وتحديداً المستقبل الرياضي بقابس والملعب القابسي إضافة إلى الأمل الرياضي ببوشمة، بياناً أعلنت فيه تجميد كافة أنشطتها الرياضية والانسحاب بشكل رسمي من منافسات بطولة الرابطة المحترفة الثانية.</p><p>وتعود هذه الخطوة المفاجئة إلى الأزمة المالية والإدارية الحادة التي تمر بها الفرق الثلاثة، والتي عزتها في بيانها المشترك إلى ما وصفته بـ\"التدهور الخطير والوضع الكارثي الذي آلت إليه أوضاعها\".</p><p>وأكدت الأندية أن تأخر صرف منحة المجمع الكيميائي التونسي يمثل السبب الرئيسي في تراجع وضعيتها، محمّلة إياه المسؤولية الكاملة عن هذا الانهيار \"جراء تنصله من تعهداته المالية لمدة سنتين متتاليتين، وهو ما جعل استمرار النشاط الرياضي، حتى في حده الأدنى، أمراً مستحيلاً\".</p><figure class=\"wp-block-image size-large\"><img src=\"https://content.mosaiquefm.net/uploads/ckFiles/1795593972.jpg\" alt=\"أندية ڤابس تُعلن التجميد والانسحاب من بطولة الرابطة الثانية\" /></figure>",
+      "featured_image": "https://content.mosaiquefm.net/uploads/content/large/1795594064.webp",
+      "inline_images": [
+        "https://content.mosaiquefm.net/uploads/ckFiles/1795593972.jpg"
+      ],
+      "seo_title": "أندية قابس تعلن انسحابها من بطولة الرابطة الثانية",
+      "seo_description": "قررت أندية المستقبل الرياضي بقابس والملعب القابسي وأمل بوشمة تجميد أنشطتها والانسحاب من الرابطة الثانية بسبب الأزمة المالية.",
+      "scraped_at": "2026-11-25T09:01:39.703928+00:00"
+    },
+    {
+      "hash": "ab0ed46a51306036",
+      "lang": "ar",
+      "category": "tunisia",
+      "title": "أحكام بالسجن وغرامات تتجاوز 18 مليون دينار ضد رجل أعمال وصاحب مكتب صرف بتونس",
+      "content_html": "<p>أصدرت الدائرة الجنائية المتخصصة في قضايا الفساد المالي بالمحكمة الابتدائية بتونس حكماً يقضي بالسجن لمدة ست سنوات في حق رجل أعمال ينشط في مجال تصدير المنتجات البحرية، وبخمس سنوات ضد شقيقه الذي يدير مكتب صرف، إلى جانب إقرارات بخطايا مالية تتجاوز قيمتها 18 مليون دينار، وذلك في إطار ملف يتصل بمبادلات تجارية خارجية شابتها شبهات غسيل أموال.</p><p>وتعود تفاصيل الملف إلى تحريات وأبحاث جرت بشأن معاملات وتدفقات تجارية تم إبرامها مع إحدى الدول الأجنبية في قطاع تصدير المنتجات البحرية، حيث لاحق المتهمين اتهامات تتعلق بتبييض الأموال، ومخالفة التشريعات الصرفية والجمركية، إضافة إلى محاولة التمويه وإخفاء المصدر الفعلي للأموال المتأتية من هذه المعاملات.</p><p>وإثر الانتهاء من استنطاق المتهمين ومناقشة مرافعات هيئة الدفاع، أصدرت الدائرة القضائية قراراتها الابتدائية القاضية بالعقوبات السجنية والخطايا المالية المحددة.</p>",
+      "featured_image": "https://content.mosaiquefm.net/uploads/content/large/1795593632.webp",
+      "inline_images": [],
+      "seo_title": "أحكام بالسجن وغرامات بـ18 مليون دينار ضد رجل أعمال بتونس",
+      "seo_description": "المحكمة الابتدائية بتونس تقضي بالسجن وغرامات مالية تتجاوز 18 مليون دينار ضد رجل أعمال وشقيقه في قضية غسيل أموال وتجاوزات صرفية.",
+      "scraped_at": "2026-11-25T09:02:02.595474+00:00"
+    },
+    {
+      "hash": "ff77a726f35ce3c7",
+      "lang": "fr",
+      "category": "world",
+      "title": "Procureur aperçu au siège du RN : Gérald Darmanin ordonne une enquête administrative",
+      "content_html": "<p>Gérald Darmanin a annoncé mercredi matin avoir sollicité \"l'Inspection générale de la justice pour une enquête administrative qui fera toute la lumière\" sur la présence d'un procureur de Paris au siège du RN, constatée lors d'une perquisition dans les locaux du parti.</p><p>\"On doit lever une ambiguïté : est-ce que des hauts fonctionnaires ont donné des renseignements au Rassemblement national , ce qui serait évidemment un crime contre leur fonction et la haute idée qu'ils se font de leur indépendance?\", s'est interrogé le ministre de la Justice.</p><p>Christian de Rocquigny, procureur adjoint de Paris, avait été surpris le 9 novembre dernier au siège de la formation politique par les forces de l'ordre chargées d'effectuer une perquisition.</p><p>Après la révélation de ces faits la semaine passée, le magistrat avait expliqué s'être déplacé dans les locaux du parti d'extrême droite uniquement pour \"prendre un café avec une connaissance\", à savoir Jean-Paul Garraud, ancien magistrat et eurodéputé RN, ce que ce dernier a également confirmé.</p><p>Le ministre a vivement déploré un \"défaut de loyauté\" du magistrat, auquel il reproche de ne pas avoir averti son \"administration\" de sa présence au siège du mouvement en pleine perquisition, d'autant que cette pause café n'a pas eu lieu au cours d'un jour de congé du procureur adjoint.</p><p>Le garde des Sceaux a rappelé qu'il incomberait, le cas échéant, au Conseil supérieur de la magistrature de formuler une éventuelle sanction disciplinaire.</p><p>\"Quand on croise une équipe qui vient faire une perquisition, quand on rentre au parquet, en général on prévient sa procureure pour dire : \"voilà, j'ai peut-être fait une bêtise\", ça n'a pas été le cas\", a relevé Gérald Darmanin en faisant référence à des \"péchés véniels\".</p><p>En outre, le garde des Sceaux s'est demandé si Christian de Rocquigny \"a-t-il participé ou non à donner des informations\" au RN, ce qui est reproché à un autre haut fonctionnaire impliqué dans ce dossier, Hugues Moutouh, devant être démis de ses fonctions de préfet de la région Centre-Val-de-Loire mercredi.</p><p>\"Je n'ai aucun élément qui me permet de le dire\", a souligné Gérald Darmanin au sujet du procureur, précisant que ce dernier n'est \"pas en contact avec les informations judiciaires qui concernent le Rassemblement national\".</p><p>\"Mais comme l'indépendance de la justice, son impartialité, est importante, la femme de César ne peut pas être suspectée : on va lever ce point et une enquête administrative est engagée\", a conclu le ministre.</p>",
+      "featured_image": "https://s.france24.com/media/display/e07fc7a4-d76d-11f1-b09c-1beafce15fea/w:1280/p:16x9/e2a144c5507a3f72474a216727db33406c2aad11.jpg",
+      "inline_images": [],
+      "seo_title": "Procureur au siège du RN : Darmanin saisit l'IGJ",
+      "seo_description": "Gérald Darmanin ordonne une enquête administrative après la présence inattendue d'un procureur adjoint au siège du RN en pleine perquisition.",
+      "scraped_at": "2026-11-25T09:02:20.833174+00:00"
+    },
     {
       "hash": "08137b24d2b00fc5",
       "lang": "ar",
@@ -698,54 +748,6 @@
       "seo_title": "27 نائباً يرفضون مشروع ميزانية 2027 ويطلبون تعديلات",
       "seo_description": "أصدر 27 نائباً بياناً مشتركاً يرفضون فيه مشروع قانون المالية 2027 بصيغته الحالية، مطالبين بإدخال تعديلات جوهرية ومراجعة السياسات الاقتصادية والاجتماعية.",
       "scraped_at": "2026-11-24T16:01:26.983229+00:00"
-    },
-    {
-      "hash": "774ddaae6e885e3b",
-      "lang": "ar",
-      "category": "sports",
-      "title": "قرار حاسم من محكمة التحكيم الرياضي: السنغال تحتفظ بلقب كأس أمم أفريقيا 2025",
-      "content_html": "<p>أصدرت محكمة التحكيم الرياضي (CAS) توضيحاً رسمياً حاسماً في الملف الشائك.</p>\n<p>قضت محكمة التحكيم الرياضي بتأكيد تتويج المنتخب السنغالي بكأس أمم أفريقيا 2025، وذلك بعد قبولها الطعن الذي رفعه الاتحاد السنغالي لكرة القدم، الرامي إلى إلغاء قرار سلبهم اللقب وتوريته للمنتخب المغربي.</p>\n<p>وأفاد بيان المحكمة بأنّ النصوص التأديبية الخاصة بالاتحاد الأفريقي لكرة القدم، التي كان يمكن الاستناد إليها لإعلان هزيمة السنغال بالانسحاب، لا تصلح للتطبيق في هذه الواقعة. جاء ذلك لأنّ حكم المباراة لم يصدر قراراً بإنهاء اللقاء نهائياً، بل توجّه باستئناف اللعب عقب التوقف. وأضافت المحكمة في نصّها: \"كان من الممكن تطبيق هذه العقوبة لو أنّ الحكم أعلن نهاية المباراة بشكل نهائي، مما كان سيترتب عليه خسارة المنتخب السنغالي، لكن هذه الحالة لم تقع\".</p>\n<p>وفي الاتجاه نفسه، شدّد ماتيو ريب، الأمين العام لمحكمة التحكيم الرياضي، على أنّ الحكم لم يقترف أيّ خطأ قانوني حين اتخذ قراره بإعادة استئناف اللعب.</p>\n<p>[[IMG_1]]</p>\n<p>من ركلة جزاء مثيرة للجدل إلى معركة قضائية.. كيف بدأت أزمة النهائي؟</p>\n<p>بهذا الحكم، يُغلق ملف النزاع القانوني الذي اندلع عقب المباراة النهائية للبطولة، التي جمعت المغرب بالسنغال في 18 جانفي 2026، على أرضية ملعب الأمير مولاي عبد الله في العاصمة الرباط، والتي شهدت تطورات درامية.</p>\n<p>كان المنتخب السنغالي قد توّج بالبطولة عقب فوزه على نظيره المغربي بهدف نظيف في الأشواط الإضافية، في مباراة اتسمت بالتوتر الشديد، خاصة بعد احتساب ركلة جزاء لصالح المغرب في الدقائق الأخيرة من الوقت الأصلي، عقب مراجعة تقنية الفيديو (VAR).</p>\n<p>[[IMG_2]]</p>\n<p>احتجاجاً على القرار التحكيمي، غادر عدد من لاعبي المنتخب السنغالي أرضية الملعب، لتتوقف المباراة لمدة تقارب 15 دقيقة قبل أن تعود لاستئنافها.</p>\n<p>وأضاع اللاعب المغربي إبراهيم دياز ركلة الجزاء، بعد اختياره تنفيذها بطريقة \"البانينكا\"، حيث تصدى لها الحارس السنغالي إدوارد ميندي ببراعة. وفي الوقت الإضافي، نجح باب غاي في هزّ الشباك مسجلاً هدف الفوز، ليمنح منتخب بلاده لقبه القاري الثاني.</p>\n<p>بعد انتهاء اللقاء، تقدّم الاتحاد المغربي لكرة القدم بشكوى رسمية إلى الاتحاد الأفريقي، مستنداً في ذلك إلى المادة 82 من لوائح البطولة، والتي تنصّ على اعتبار الفريق منهزماً وإقصاؤه من المنافسة إذا رفض مواصلة اللعب أو غادر الملعب قبل صافرة النهاية دون موافقة الحكم.</p>\n<p>وفي 17 مارس الماضي، أصدرت لجنة الاستئناف التابعة للاتحاد الأفريقي قراراً بإلغاء نتيجة المباراة النهائية وإعلان هزيمة السنغال بنتيجة 3-0، مستندةً إلى المادتين 82 و84 من لوائح المسابقة، وهو ما أتاح للمنتخب المغربي الحصول على اللقب.</p>\n<p>لكن الاتحاد السنغالي رفض هذا القرار، واصفاً إياه بـ \"الظالم وغير المسبوق وغير المقبول\"، معلناً لجوئه إلى محكمة التحكيم الرياضي للطعن فيه. وأكد السنغاليون أنّ الحكم سمح باستئناف المباراة واعتمد نتيجتها النهائية، مشددين على أنّ القرارات المتعلقة بالوقائع التحكيمية داخل الملعب لا يجوز الطعن فيها.</p>\n<p>مع قبول الطعن السنغالي وإلغاء قرار لجنة الاستئناف التابعة للاتحاد الأفريقي، عادت نتيجة النهائي إلى ما انتهت إليه فعلياً فوق أرضية الميدان، ليحتفظ المنتخب السنغالي بلقبه الأفريقي.</p>",
-      "featured_image": "https://content.mosaiquefm.net/uploads/content/large/1795534419.webp",
-      "inline_images": [],
-      "seo_title": "محكمة التحكيم الرياضي تؤكد بقاء لقب أمم أفريقيا 2025 مع السنغال",
-      "seo_description": "تأكيد رسمي من محكمة التحكيم الرياضي (CAS) لتتويج السنغال بكأس أمم أفريقيا 2025 بعد قبول طعنها ضد قرار الاتحاد الأفريقي.",
-      "scraped_at": "2026-11-24T16:01:56.047513+00:00"
-    },
-    {
-      "hash": "950a17bf70584948",
-      "lang": "fr",
-      "category": "world",
-      "title": "Fausse rétractation de Takieddine : Nicolas Sarkozy et Carla Bruni renvoyés devant le tribunal",
-      "content_html": "<p>Ils sont accusés d'avoir tenté d'induire la justice en erreur afin d'innocenter Nicolas Sarkozy dans le cadre de l'affaire du financement libyen de sa campagne présidentielle de 2007. Les onze personnes mises en examen dans ce dossier lié à Ziad Takieddine, incluant l'ex-chef de l'État, son épouse Carla Bruni-Sarkozy ainsi que la figure des paparazzis Michèle \"Mimi\" Marchand, comparaîtront en 2027 pour répondre de la rétractation potentiellement achetée de l'intermédiaire, a-t-on appris mardi 24 novembre de source proche de l'affaire.</p><p>L'ensemble des prévenus a été renvoyé devant le tribunal correctionnel de Paris, a indiqué cette même source. D'après l'agenda prévisionnel, les audiences se tiendront du 3 novembre au 2 décembre 2027.</p><p>Les personnes poursuivies auraient employé des manœuvres frauduleuses pour égarer la justice. L'intermédiaire Ziad Takieddine, témoin clé décédé au Liban en septembre 2025, s'était d'abord rétracté avant de réitérer, deux mois plus tard, ses accusations visant Nicolas Sarkozy au sujet du financement libyen de son élection en 2007.</p><h2>\"Association de malfaiteurs\"</h2><p>Nicolas Sarkozy et Carla Bruni comparaîtront sous les chefs d'inculpation d'« association de malfaiteurs en vue de commettre une escroquerie en bande organisée » ainsi que de « recel de subornation de témoin ».</p><p>Pour sa part, Michèle Marchand, surnommée « Mimi Marchand », devra répondre d'accusations de « subornation », d'« association de malfaiteurs en vue de commettre une escroquerie en bande organisée » et « en vue de préparer des faits de corruption de personnels judiciaires étrangers ».</p><p>Sollicités pour réagir, les conseils des trois mis en cause n'ont pas donné suite dans l'immédiat.</p><p>Cette décision de renvoi intervient alors que la cour d'appel doit prononcer son arrêt lundi concernant dix prévenus, au nombre desquels figure Nicolas Sarkozy, dans l'affaire principale du financement libyen présumé de sa campagne de 2007.</p><p>Proclamant son innocence depuis quinze ans, l'ancien dirigeant de la droite française a été condamné en première instance, en septembre 2025, à une peine de cinq années de prison pour ce « pacte de corruption » conclu avec la Libye sous le régime de Mouammar Kadhafi. Cette sanction lui avait valu l'année dernière de purger 20 jours de détention à la prison de la Santé, devenant ainsi le premier ancien président de la République (2007-2012) à être incarcéré.</p><p>Le parquet général avait requis à son encontre une peine de sept ans d'emprisonnement en mai dernier.</p><p>Personnage controversé, Ziad Takieddine avait formulé dès 2011 les premières allégations portant sur le financement libyen de la campagne présidentielle de 2007. Dès 2012, il avait affirmé publiquement qu'il s'agissait de « la vérité ».</p><p>En 2016, il s'était auto-incriminé dans des déclarations publiques, affirmant avoir transporté entre novembre 2006 et début 2007 la somme de « cinq millions d'euros » répartie dans des valises lors de trois trajets entre Tripoli et Paris. Selon ses propos, ces fonds auraient été remis en deux temps à Claude Guéant, alors directeur de cabinet du ministre de l'Intérieur Nicolas Sarkozy, mais également directement à l'ancien président.</p><p>Ces accusations avaient été vigoureusement démenties par les intéressés. Nicolas Sarkozy n'a cessé d'exprimer son mépris envers l'intermédiaire, qu'il qualifiait de « grand manipulateur ».</p><p>Ziad Takieddine avait lui-même été mis en examen dans le cadre de cette enquête particulièrement sensible.</p><p>Puis, opérant un coup de théâtre lors de déclarations médiatiques en novembre 2020, il était revenu sur ses affirmations en déclarant que Nicolas Sarkozy n'avait « pas touché un centime » venant du dirigeant libyen Mouammar Kadhafi.</p>",
-      "featured_image": "https://s.france24.com/media/display/eb4d311e-e805-11f1-98af-1991d4929b54/w:1280/p:16x9/000-1L73PF.jpg",
-      "inline_images": [],
-      "seo_title": "Fausse rétractation Takieddine : Sarkozy et Bruni au procès",
-      "seo_description": "Nicolas Sarkozy, Carla Bruni et neuf autres prévenus seront jugés en 2027 dans l'affaire de la fausse rétractation de Ziad Takieddine.",
-      "scraped_at": "2026-11-24T16:02:24.082910+00:00"
-    },
-    {
-      "hash": "9a51bc33d40ccf6a",
-      "lang": "ar",
-      "category": "tunisia",
-      "title": "انطلاق مؤتمر دولي عربي بالحمامات لتسخير الطب النووي في علاج السرطان",
-      "content_html": "<p>شدد وزير التعليم العالي والبحث العلمي، خلال افتتاحه فعاليات منتدى الهيئة العربية للطاقة الذرية المخصص لبحث استخدام الطب النووي في مكافحة الأورام بالحمامات الجنوبية، على أن \"الطب النووي يشكّل أحد أهم التطبيقات السلمية الواعدة للاستخدامات النووية، بفضل ما يتيحه من تقنيات متطورة للكشف المبكر والدقيق عن الأورام وابتكار علاجات موجهة، تحسّن جودة حياة المرضى والنتائج العلاجية\".</p><p>وبيّن الوزير، في كلمته الافتتاحية للملتقى العلمي، أن استضافة تونس لهذه التظاهرة بالاشتراك مع المركز الوطني للعلوم والتكنولوجيات النووية، والهيئة العربية للطاقة الذرية، والوكالة الدولية للطاقة الذرية، تبرز مدى محورية التنسيق والشراكة بين الهياكل الوطنية والمنظمات الإقليمية والدولية لبناء الإمكانيات العلمية والصحية وتوظيف التقدم التكنولوجي لصالح الإنسانية.</p><p>وفي إطار التصدي للتحديات الصحية المعقدة التي يسببها داء السرطان، أكد الوزير على أهمية تدعيم العمل العربي المشترك عبر محاور أساسية، تشمل تحديث البنية التحتية والمعدات الطبية، ودعم منظومة البحث العلمي والتدريب المتخصص، إضافة إلى تبادل التجارب ونقل التقنيات الحديثة واستثمار الكفاءات العربية، لا سيما المغتربة، وتأطير شبكات تواصل معها لرفع جاهزية منظومات الاستجابة لدى كافة البلدان العربية.</p><p>ولفت الوزير إلى أن تونس، بالنظر إلى رئاستها لمجلس جامعة الدول العربية على المستوى الوزاري، تقدّر مساعي ومبادرات الهيئات العربية المتخصصة في ترسيخ التكامل العربي ودعم التنسيق المشترك، مجدداً دعم بلاده لدور الهيئة العربية للطاقة الذرية في تنمية التطبيقات السلمية للمجال النووي وتحويل المقترحات العلمية إلى مشاريع عملية تحقق أهداف التنمية.</p><p>واختتم كلمته بالإعراب عن أمله في أن يكون هذا المنتدى حجر أساس لدعم التعاون المؤسسي العربي في مجالات الطب النووي، من خلال صياغة توصيات موحدة ووضع خارطة طريق إقليمية تؤدي إلى نتائج ملموسة وقابلة للتطبيق، مؤكداً جاهزية تونس الدائمة للانخراط في أي مسعى جماعي يعزز التطور العلمي والتكنولوجي.</p>",
-      "featured_image": "https://content.mosaiquefm.net/uploads/content/large/1795530807.webp",
-      "inline_images": [],
-      "seo_title": "الطب النووي لعلاج السرطان: شراكة عربية بالحمامات",
-      "seo_description": "تونس تستضيف منتدى الهيئة العربية للطاقة الذرية لتطوير الطب النووي في علاج الأورام وتعزيز التعاون الإقليمي والدولي لمكافحة السرطان.",
-      "scraped_at": "2026-11-24T15:01:29.275782+00:00"
-    },
-    {
-      "hash": "1d0e8740b7963b01",
-      "lang": "ar",
-      "category": "world",
-      "title": "السنغال تعلق على قرار محكمة التحكيم: أبطال أفريقيا مرة أخرى",
-      "content_html": "<p>ردّ المنتخب السنغالي على حكم محكمة التحكيم الرياضي، الذي أسفر عن إعادة لقب كأس أمم أفريقيا 2025 إلى \"أسود التيرانغا\"، وذلك من خلال منشور على صفحته الرسمية في منصة التواصل الاجتماعي.</p>\n<p>وقد شارك الحساب الرسمي صورتين تظهران نجمتين فوق شعار المنتخب، مرفقتين بتواريخ محددة: الأولى تشير إلى تاريخ المباراة النهائية في 18 جانفي 2026، بينما الثانية تعود إلى تاريخ إصدار قرار المحكمة، مع إضافة العبارة التالية: \"أبطال أفريقيا مجددا ودائما\".</p>",
-      "featured_image": "https://content.mosaiquefm.net/uploads/content/large/1795531699.webp",
-      "inline_images": [],
-      "seo_title": "السنغال تعلق على استعادة لقب كأس أمم أفريقيا 2025",
-      "seo_description": "علّق المنتخب السنغالي على قرار محكمة التحكيم الرياضي بإعادة لقب كأس أمم أفريقيا 2025، مؤكداً مكانته كأبطال القارة مجدداً ودائماً.",
-      "scraped_at": "2026-11-24T15:02:45.018687+00:00"
     }
   ]
 }
