@@ -1,6 +1,18 @@
 {
-  "updated_at": "2026-11-28T01:01:23.784331+00:00",
+  "updated_at": "2026-11-28T02:01:12.609859+00:00",
   "items": [
+    {
+      "hash": "e513ffe4e24d3cdb",
+      "lang": "fr",
+      "category": "world",
+      "title": "La célèbre poutine du Québec s'apprête à voyager dans l'espace",
+      "content_html": "<p>Une déclinaison adaptée et lyophilisée de ce plat emblématique, composé de frites, de fromage et de sauce brune, prendra place à bord d'une fusée dont le lancement est programmé depuis Cap Canaveral, en Floride, le 29 novembre, avant de s'amarrer à la Station spatiale internationale le 1er décembre.</p><p>Cette « poutine spatiale végétalienne » a « été élaborée sans viande ni ingrédients laitiers dans le but de faciliter la validation et d'accélérer la procédure d'envoi auprès de l'agence spatiale américaine », a précisé l'institution canadienne par le biais d'un communiqué.</p><p>« Je visualisais Josh en train de savourer sa poutine et de retrouver un peu le goût de son pays », a partagé sur son profil Instagram le concepteur de cette recette, Yves Lowe, qui exerce par ailleurs les fonctions de chef cuisinier pour la formation de hockey des Canadiens de Montréal.</p><p>L'astronaute Joshua Kutryk aura l'occasion de déguster cette toute première poutine intersidérale en compagnie des membres de son équipage de la mission Crew-13, laquelle a pris la relève de la mission Crew-12 au sein de laquelle figurait notamment la spationaute française Sophie Adenot.</p><p>Le représentant canadien, qui est devenu papa d'une petite fille après son envol le 1er octobre, doit regagner la planète Terre aux alentours du mois de mars 2027.</p>",
+      "featured_image": "https://s.france24.com/media/display/b95c3d18-eab1-11f1-a3fd-f9cf020caef6/w:1280/p:16x9/890a9b272d3ca3c8ee81265c46bc8b82a557b7a0.jpg",
+      "inline_images": [],
+      "seo_title": "La poutine québécoise bientôt envoyée dans l'espace",
+      "seo_description": "La célèbre poutine québécoise s'envole vers l'ISS pour l'astronaute Joshua Kutryk, dans une version spatiale et végétalienne inédite.",
+      "scraped_at": "2026-11-28T02:01:09.957435+00:00"
+    },
     {
       "hash": "cb7ba8d48917d776",
       "lang": "fr",
@@ -738,18 +750,6 @@
       "seo_title": "مستجدات الحالة الصحية للفنان العربي المازني بعد الجراحة",
       "seo_description": "استقرار الحالة الصحية للكوميدي العربي المازني بعد خضوعه لعملية جراحية في الرأس إثر تعرضه للاعتداء، والقبض على المتهم الرئيسي.",
       "scraped_at": "2026-11-27T12:01:12.271681+00:00"
-    },
-    {
-      "hash": "1f364c2af8efb303",
-      "lang": "ar",
-      "category": "tunisia",
-      "title": "السجن 20 عاماً لأجنبيين ضبطا بتهريب مخدرات داخل أمعائهما بمطار تونس قرطاج",
-      "content_html": "<p>أصدرت هيئة الدائرة الجنائية الرابعة بالمحكمة الابتدائية بتونس حكماً يقضي بالسجن مدة 20 سنة في حق شخصين يحملان جنسية أجنبية، وذلك إثر ثبوت تورطهما في جلب وتهريب شحنة من المواد المخدرة داخل أمعائهما عبر مطار تونس قرطاج الدولي.</p><p>وتشير ملابسات الواقعة إلى أنه بمجرد إخضاع المظنون فيهما للفحص عبر جهاز الأشعة (السكانار)، كشفت الفحوصات وجود أجسام مشبوهة بداخل جهازيهما الهضمي. وعلى الفور، جرى نقلهما إلى المؤسسة الاستشفائية حيث تمكّن الطاقم الطبي من استخراج ما يزيد عن 80 كبسولة محملة بمخدر \"التمرة\". وبالموازاة مع ذلك، كشفت عملية تفتيش أمتعتهما وحقائبهما عن ضبط عدد من صفائح مخدر \"الزطلة\" كانت مخفية بدقة بين مستلزماتهما الشخصية.</p><p>وأكدت التحريات والأبحاث الجارية أن الشحنات المخدرة المحجوزة تم جلبها من إحدى الدول الأجنبية.</p><p>وعقب استيفاء جميع الأبحاث والتتبعات القانونية اللازمة، تقرر الاحتفاظ بالمتهمين وإحالتهما على القضاء، لتسدل الدائرة الجنائية الستار على القضية بإدانتهما وتسليط عقوبة السجن لمدة عشرين عاماً على كل منهما.</p>",
-      "featured_image": "https://content.mosaiquefm.net/uploads/content/large/1795778380.webp",
-      "inline_images": [],
-      "seo_title": "السجن 20 عاماً لأجنبيين هرّبا مخدرات بأمعائهما في تونس",
-      "seo_description": "قضت المحكمة الابتدائية بتونس بالسجن 20 سنة ضد أجنبيين هرّبا كبسولات مخدرة في أمعائهما وصفائح زطلة بحقائبهما عبر مطار تونس قرطاج.",
-      "scraped_at": "2026-11-27T12:01:48.406774+00:00"
     }
   ]
 }
